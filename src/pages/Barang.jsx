@@ -8,7 +8,7 @@ import {
   DeleteOutlined, BoxPlotOutlined, InfoCircleOutlined, DollarOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import axios from "axios";
+import API from "./services/api"; // sesuaikan path relatif ke file api.jsx kamu
 
 const { Title, Text } = Typography;
 
@@ -23,7 +23,7 @@ const Barang = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/barang/");
+      const response = await API.get("/barang/");
       if (response.data.success) {
         setData(response.data.data);
       }
@@ -47,7 +47,7 @@ const Barang = () => {
       centered: true,
       onOk: async () => {
         try {
-          await axios.delete(`http://localhost:5000/barang/${kode}`);
+          await API.delete(`/barang/${kode}`);
           message.success("Barang berhasil dihapus");
           loadData();
         } catch (error) {
@@ -61,10 +61,10 @@ const Barang = () => {
     try {
       const values = await form.validateFields();
       if (editingItem) {
-        await axios.put(`http://localhost:5000/barang/${editingItem.KodeBrg}`, values);
+        await API.put(`/barang/${editingItem.KodeBrg}`, values);
         message.success("Data barang diperbarui");
       } else {
-        await axios.post("http://localhost:5000/barang/", values);
+        await API.post("/barang/", values);
         message.success("Barang baru ditambahkan");
       }
       setIsModalOpen(false);
