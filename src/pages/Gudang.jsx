@@ -101,12 +101,14 @@ const Gudang = () => {
       title: "NAMA GUDANG", 
       dataIndex: "NamaGudang", 
       key: "NamaGudang",
+      width: 200,
       render: (text) => <Text strong style={{ color: '#1e293b' }}>{text}</Text>
     },
     { 
       title: "ALAMAT", 
       dataIndex: "Alamat", 
       key: "Alamat",
+      width: 250,
       ellipsis: true
     },
     { 
@@ -128,6 +130,7 @@ const Gudang = () => {
       key: "action",
       align: 'center',
       width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <Space>
           <Button 
@@ -153,8 +156,8 @@ const Gudang = () => {
         bordered={false} 
         style={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
       >
-        <Row justify="space-between" align="middle" style={{ marginBottom: 32 }}>
-          <Col>
+        <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 32 }}>
+          <Col xs={24} md="auto">
             <Space size="middle">
               <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px' }}>
                 <HomeOutlined style={{ fontSize: '24px', color: '#22c55e' }} />
@@ -165,13 +168,13 @@ const Gudang = () => {
               </div>
             </Space>
           </Col>
-          <Col>
-            <Space size="small">
+          <Col xs={24} md="auto">
+            <Space size="small" wrap style={{ width: '100%' }}>
               <Input 
                 placeholder="Cari nama atau kode gudang..." 
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                 onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: 250, borderRadius: '8px' }}
+                style={{ width: 250, maxWidth: '100%', borderRadius: '8px' }}
                 allowClear
               />
               <Button icon={<ReloadOutlined />} onClick={loadData} loading={loading} />
@@ -193,6 +196,7 @@ const Gudang = () => {
           rowKey="KodeGudang" 
           loading={loading} 
           pagination={{ pageSize: 7 }}
+          scroll={{ x: 700 }}
           className="modern-table"
         />
 
@@ -201,7 +205,8 @@ const Gudang = () => {
           open={isModalOpen} 
           onOk={handleSave} 
           onCancel={() => setIsModalOpen(false)}
-          width={500}
+          width="90%"
+          style={{ maxWidth: 500 }}
           okText="Simpan"
           cancelText="Batal"
           centered

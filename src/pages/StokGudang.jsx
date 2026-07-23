@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { 
   Table, Button, message, Tag, Space, Card, 
-  Typography, Modal, Form, Input, InputNumber, Row, Col, Divider, Select
+  Typography, Modal, Form, Input, InputNumber, Row, Col, Select
 } from "antd";
 import { 
   ReloadOutlined, PlusOutlined, EditOutlined, 
@@ -18,8 +18,7 @@ const StokGudang = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [searchText, setSearchText] = useState("");
-  
-  // State untuk dropdown referensi
+
   const [listBarang, setListBarang] = useState([]);
   const [listGudang, setListGudang] = useState([]);
   const [form] = Form.useForm();
@@ -38,7 +37,6 @@ const StokGudang = () => {
     }
   };
 
-  // Mengambil data referensi untuk Select Box
   const loadReferences = async () => {
     try {
       const resBrg = await API.get("/barang/");
@@ -66,7 +64,6 @@ const StokGudang = () => {
       centered: true,
       onOk: async () => {
         try {
-          // Menyesuaikan dengan route backend /<kode_gudang>/<kode_brg>
           await API.delete(`/stokgudang/${kodeGudang}/${kodeBrg}`);
           message.success("Data stok berhasil dihapus");
           loadData();
@@ -81,7 +78,6 @@ const StokGudang = () => {
     try {
       const values = await form.validateFields();
       if (editingItem) {
-        // Update menggunakan 2 parameter primary key
         await API.put(`/stokgudang/${editingItem.KodeGudang}/${editingItem.KodeBrg}`, values);
         message.success("Stok diperbarui");
       } else {
@@ -117,6 +113,7 @@ const StokGudang = () => {
       title: "GUDANG", 
       dataIndex: "NamaGudang", 
       key: "NamaGudang",
+      width: 180,
       render: (text, record) => (
         <Space direction="vertical" size={0}>
           <Text strong style={{ color: '#1e293b' }}>{text}</Text>
@@ -128,6 +125,7 @@ const StokGudang = () => {
       title: "BARANG", 
       dataIndex: "NamaBrg", 
       key: "NamaBrg",
+      width: 180,
       render: (text, record) => (
         <Space direction="vertical" size={0}>
           <Text strong style={{ color: '#6366f1' }}>{text}</Text>
@@ -140,6 +138,7 @@ const StokGudang = () => {
       dataIndex: "QtyStok", 
       key: "QtyStok",
       align: 'right',
+      width: 120,
       render: (v) => <Text strong>{v.toLocaleString('id-ID')}</Text>
     },
     { 
@@ -147,12 +146,14 @@ const StokGudang = () => {
       dataIndex: "MinStok", 
       key: "MinStok",
       align: 'right',
+      width: 120,
       render: (v) => <Text type="secondary">{v.toLocaleString('id-ID')}</Text>
     },
     { 
       title: "STATUS", 
       dataIndex: "QtyStok", 
       align: "center",
+      width: 130,
       render: (qty, record) => {
         const isLow = qty <= record.MinStok;
         return (
@@ -170,6 +171,8 @@ const StokGudang = () => {
       title: "AKSI",
       key: "action",
       align: 'center',
+      width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <Space>
           <Button 
@@ -195,8 +198,8 @@ const StokGudang = () => {
         bordered={false} 
         style={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
       >
-        <Row justify="space-between" align="middle" style={{ marginBottom: 32 }}>
-          <Col>
+        <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 32 }}>
+          <Col xs={24} md="auto">
             <Space size="middle">
               <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px' }}>
                 <HomeOutlined style={{ fontSize: '24px', color: '#22c55e' }} />
@@ -207,13 +210,13 @@ const StokGudang = () => {
               </div>
             </Space>
           </Col>
-          <Col>
-            <Space size="small">
+          <Col xs={24} md="auto">
+            <Space size="small" wrap>
               <Input 
                 placeholder="Cari barang atau gudang..." 
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                 onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: 250, borderRadius: '8px' }}
+                style={{ width: 250, maxWidth: '100%', borderRadius: '8px' }}
                 allowClear
               />
               <Button icon={<ReloadOutlined />} onClick={loadData} loading={loading} />
@@ -235,6 +238,7 @@ const StokGudang = () => {
           rowKey={(record) => `${record.KodeGudang}-${record.KodeBrg}`} 
           loading={loading} 
           pagination={{ pageSize: 7 }}
+          scroll={{ x: 850 }}
           className="modern-table"
         />
 
@@ -243,7 +247,8 @@ const StokGudang = () => {
           open={isModalOpen} 
           onOk={handleSave} 
           onCancel={() => setIsModalOpen(false)}
-          width={500}
+          width="90%"
+          style={{ maxWidth: 500 }}
           centered
         >
           <Form form={form} layout="vertical" style={{ marginTop: '20px' }}>
@@ -260,12 +265,12 @@ const StokGudang = () => {
             </Form.Item>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col xs={12}>
                 <Form.Item name="QtyStok" label="Stok Saat Ini" rules={[{ required: true }]}>
                   <InputNumber style={{ width: '100%' }} min={0} />
                 </Form.Item>
               </Col>
-              <Col span={12}>
+              <Col xs={12}>
                 <Form.Item name="MinStok" label="Minimal Stok" rules={[{ required: true }]}>
                   <InputNumber style={{ width: '100%' }} min={0} />
                 </Form.Item>

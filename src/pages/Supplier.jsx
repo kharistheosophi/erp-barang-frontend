@@ -6,7 +6,6 @@ import {
   TeamOutlined 
 } from "@ant-design/icons";
 import API from "../services/api";
-// 1. Import library XLSX
 import * as XLSX from "xlsx";
 
 const { Text, Title } = Typography;
@@ -32,24 +31,17 @@ const Supplier = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  // 2. Tambahkan Fungsi Export
   const handleExport = () => {
     if (data.length === 0) {
       return message.warning("Tidak ada data untuk di-export");
     }
-
     try {
-      // Mengambil data yang mungkin sudah difilter oleh pencarian
       const filteredData = data.filter(i => 
         i.Nama?.toLowerCase().includes(searchText.toLowerCase())
       );
-
-      // Konversi JSON ke worksheet
       const worksheet = XLSX.utils.json_to_sheet(filteredData);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Data Supplier");
-
-      // Generate file excel dan download
       XLSX.writeFile(workbook, `Data_Supplier_${new Date().toLocaleDateString()}.xlsx`);
       message.success("Berhasil mengunduh file Excel");
     } catch (error) {
@@ -74,9 +66,9 @@ const Supplier = () => {
     }
   };
 
-const handleNew = () => {
-    setSelectedKey(null); // Menghapus tanda bahwa kita sedang edit
-    form.resetFields();   // Mengosongkan semua kotak input
+  const handleNew = () => {
+    setSelectedKey(null);
+    form.resetFields();
     message.info("Form telah dikosongkan. Silahkan input data baru.");
   };
 
@@ -99,42 +91,46 @@ const handleNew = () => {
 
   const columns = [
     { title: "KODE", dataIndex: "KodeSupplier", width: 100, render: (text) => <Text strong style={{ color: '#3f51b5' }}>{text}</Text> },
-    { title: "NAMA SUPPLIER", dataIndex: "Nama", width: 250 },
-    { title: "ALAMAT", dataIndex: "Alamat", ellipsis: true },
+    { title: "NAMA SUPPLIER", dataIndex: "Nama", width: 220 },
+    { title: "ALAMAT", dataIndex: "Alamat", width: 250, ellipsis: true },
     { title: "GROUP", dataIndex: "KdGroup", width: 120 },
     { title: "CONTACT", dataIndex: "Contact", width: 150 },
   ];
 
   return (
-    <div style={{ padding: "20px", background: "#f8f9fa", minHeight: "100vh" }}>
+    <div style={{ padding: "0px", minHeight: "100vh" }}>
       <Card 
         bordered={false}
         style={{ borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
       >
         {/* HEADER */}
-        <div style={{ marginBottom: "20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <Space size="middle">
-            <div style={{ background: "#e8eaf6", padding: "10px", borderRadius: "8px" }}>
-              <TeamOutlined style={{ color: "#3f51b5", fontSize: "20px" }} />
-            </div>
-            <div>
-              <Title level={4} style={{ margin: 0 }}>Master Supplier</Title>
-              <Text type="secondary">Kelola data mitra bisnis dan supplier</Text>
-            </div>
-          </Space>
-          <Input 
-            prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
-            placeholder="Cari supplier..." 
-            style={{ width: 300, borderRadius: "8px" }}
-            onChange={e => setSearchText(e.target.value)}
-          />
-        </div>
+        <Row gutter={[16, 16]} justify="space-between" align="middle" style={{ marginBottom: "20px" }}>
+          <Col xs={24} md="auto">
+            <Space size="middle">
+              <div style={{ background: "#e8eaf6", padding: "10px", borderRadius: "8px" }}>
+                <TeamOutlined style={{ color: "#3f51b5", fontSize: "20px" }} />
+              </div>
+              <div>
+                <Title level={4} style={{ margin: 0 }}>Master Supplier</Title>
+                <Text type="secondary">Kelola data mitra bisnis dan supplier</Text>
+              </div>
+            </Space>
+          </Col>
+          <Col xs={24} md="auto">
+            <Input 
+              prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+              placeholder="Cari supplier..." 
+              style={{ width: '100%', maxWidth: 300, borderRadius: "8px" }}
+              onChange={e => setSearchText(e.target.value)}
+            />
+          </Col>
+        </Row>
 
         {/* FORM SECTION */}
-        <div style={{ background: "#ffffff", padding: "24px", borderRadius: "12px", border: "1px solid #f0f0f0", marginBottom: "20px" }}>
+        <div style={{ background: "#ffffff", padding: "20px", borderRadius: "12px", border: "1px solid #f0f0f0", marginBottom: "20px" }}>
           <Form form={form} layout="vertical" size="middle">
-            <Row gutter={48}>
-              <Col span={8}>
+            <Row gutter={[32, 0]}>
+              <Col xs={24} md={8}>
                 <Form.Item name="KodeSupplier" label="Kode Supplier" rules={[{ required: true }]}>
                   <Input disabled={!!selectedKey} placeholder="Input Kode" style={{ borderRadius: "6px" }} />
                 </Form.Item>
@@ -142,12 +138,12 @@ const handleNew = () => {
                   <Input placeholder="Nama Perusahaan/Supplier" style={{ borderRadius: "6px" }} />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col xs={24} md={8}>
                 <Form.Item name="Alamat" label="Alamat Kantor">
                   <Input.TextArea rows={4} placeholder="Alamat lengkap..." style={{ borderRadius: "6px" }} />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col xs={24} md={8}>
                 <Form.Item name="KdGroup" label="Kategori Group">
                   <Input placeholder="Contoh: GRP01" style={{ borderRadius: "6px" }} />
                 </Form.Item>
@@ -166,7 +162,7 @@ const handleNew = () => {
           rowKey="KodeSupplier"
           size="middle"
           loading={loading}
-          scroll={{ y: 300 }}
+          scroll={{ x: 800, y: 300 }}
           onRow={(record) => ({
             onClick: () => {
               setSelectedKey(record.KodeSupplier);
@@ -183,12 +179,12 @@ const handleNew = () => {
           marginTop: "20px", 
           display: "flex", 
           justifyContent: "flex-end",
+          flexWrap: "wrap",
           background: "#fff",
           padding: "15px 0",
           borderTop: "1px solid #f0f0f0"
         }}>
-          <Space size="small">
-            {/* 3. Hubungkan fungsi handleExport ke onClick */}
+          <Space size="small" wrap>
             <Button 
                 icon={<FileExcelOutlined />} 
                 style={{ borderRadius: "6px" }}
