@@ -3,12 +3,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Login from "./pages/login";
 import Dashboard from "./pages/dashboard/dashboard";
 import Barang from "./pages/Barang";
-import MutasiStok from "./pages/mutasi"; // 1. Ubah nama import agar tidak bentrok dengan Barang
-import Pembelian from "./pages/pembelian"; 
-import Supplier from "./pages/Supplier"; 
+import MutasiStok from "./pages/mutasi";
+import Pembelian from "./pages/pembelian";
+import Supplier from "./pages/Supplier";
+import Gudang from "./pages/Gudang"; // 3. Tambahkan import Gudang
 import MainLayout from "./layout/MainLayout";
 import StokGudang from "./pages/StokGudang";
-import ProtectedRoute  from "./ProtectedRoute";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   return (
@@ -17,21 +18,22 @@ function App() {
         {/* Rute Login: Mandiri (Tanpa Layout) */}
         <Route path="/login" element={<Login />} />
         {/* Rute Utama: Menggunakan MainLayout agar Sidebar muncul */}
-        <Route 
-        path="/" 
-        element={
-          <ProtectedRoute>
-             <MainLayout />
-          </ProtectedRoute>
-        }
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <MainLayout />
+            </ProtectedRoute>
+          }
         >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="barang" element={<Barang isDashboard={false} />} />
-          <Route path="pembelian" element={<Pembelian/>} />
-          <Route path="supplier" element={<Supplier />} /> 
-          <Route path="mutasi" element={<MutasiStok />} /> {/* 2. Masukkan ke dalam Layout */}
-           <Route path="stok-gudang" element={<StokGudang />} />
+          <Route path="pembelian" element={<Pembelian />} />
+          <Route path="supplier" element={<Supplier />} />
+          <Route path="gudang" element={<Gudang />} /> {/* 4. Daftarkan route Gudang */}
+          <Route path="mutasi" element={<MutasiStok />} />
+          <Route path="stok-gudang" element={<StokGudang />} />
         </Route>
 
         {/* Rute 404 */}
