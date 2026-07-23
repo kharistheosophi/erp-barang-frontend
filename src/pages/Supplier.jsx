@@ -5,7 +5,7 @@ import {
   LogoutOutlined, SearchOutlined, FileExcelOutlined,
   TeamOutlined 
 } from "@ant-design/icons";
-import axios from "axios";
+import API from "../services/api";
 // 1. Import library XLSX
 import * as XLSX from "xlsx";
 
@@ -21,7 +21,7 @@ const Supplier = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/supplier/");
+      const res = await API.get("/supplier/");
       setData(res.data.data);
     } catch (err) {
       message.error("Gagal memuat data");
@@ -61,10 +61,10 @@ const Supplier = () => {
     try {
       const values = await form.validateFields();
       if (selectedKey) {
-        await axios.put(`http://localhost:5000/supplier/${selectedKey}`, values);
+        await API.put(`/supplier/${selectedKey}`, values);
         message.success("Data Berhasil Diperbarui");
       } else {
-        await axios.post("http://localhost:5000/supplier/", values);
+        await API.post("/supplier/", values);
         message.success("Data Berhasil Disimpan");
       }
       handleNew();
@@ -90,7 +90,7 @@ const handleNew = () => {
       cancelText: "Batal",
       centered: true,
       onOk: async () => {
-        await axios.delete(`http://localhost:5000/supplier/${selectedKey}`);
+        await API.delete(`/supplier/${selectedKey}`);
         handleNew();
         loadData();
       }
