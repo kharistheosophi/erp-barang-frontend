@@ -70,10 +70,10 @@ const Dashboard = () => {
   ];
 
   return (
-    <div style={{ background: "#F0F2F5", padding: "12px", minHeight: "100vh" }}>
+    <div style={{ background: "#F0F2F5", padding: "20px", minHeight: "100vh" }}>
       <WelcomeUser />
 
-      <Row gutter={[16, 16]} style={{ marginTop: "16px" }}>
+      <Row gutter={[24, 24]} style={{ marginTop: "24px" }}>
         {stats.map((item, idx) => (
           <Col xs={24} sm={12} lg={6} key={idx}>
             <Card
@@ -82,9 +82,8 @@ const Dashboard = () => {
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
               }}
-              bodyStyle={{ padding: "16px" }}
             >
-              <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
                 <div
                   style={{
                     width: "48px",
@@ -96,7 +95,7 @@ const Dashboard = () => {
                     alignItems: "center",
                     fontSize: "24px",
                     color: item.iconColor,
-                    flexShrink: 0,
+                    marginRight: "16px",
                   }}
                 >
                   {item.icon}
@@ -118,18 +117,18 @@ const Dashboard = () => {
         ))}
       </Row>
 
-      <Row gutter={[16, 16]} style={{ marginTop: "16px" }}>
+      <Row gutter={[24, 24]} style={{ marginTop: "24px" }}>
         <Col xs={24} lg={12}>
           <Card
             title="Invoices"
             bordered={false}
-            style={{ borderRadius: "16px" }}
+            style={{ borderRadius: "16px", height: "300px" }}
           >
             <ResponsiveContainer width="100%" height={220}>
               <LineChart data={invoiceData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis width={40} />
+                <YAxis />
                 <Tooltip />
                 <Line
                   type="monotone"
@@ -147,13 +146,13 @@ const Dashboard = () => {
           <Card
             title="Sales Forecast"
             bordered={false}
-            style={{ borderRadius: "16px" }}
+            style={{ borderRadius: "16px", height: "300px" }}
           >
             <ResponsiveContainer width="100%" height={220}>
               <BarChart data={salesForecastData}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis width={40} />
+                <YAxis />
                 <Tooltip />
                 <Bar dataKey="sales" radius={[8, 8, 0, 0]} fill="#52C41A" />
               </BarChart>
