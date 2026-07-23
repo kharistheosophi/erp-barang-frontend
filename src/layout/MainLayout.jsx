@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Layout, Menu, Dropdown, Space, Avatar, Input, Badge, Button, Drawer } from "antd";
 import {
     DashboardOutlined,
@@ -29,8 +29,26 @@ export default function MainLayout() {
         return false;
     });
 
+    // State responsif: true jika layar mobile/tablet (< 992px)
+    const [isMobile, setIsMobile] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.innerWidth < 992;
+        }
+        return false;
+    });
+
     // State untuk bottom sheet (submenu di mobile)
-    const [activeSubmenu, setActiveSubmenu] = useState(null); // menyimpan object menu yang punya children
+    const [activeSubmenu, setActiveSubmenu] = useState(null);
+
+    // Pantau perubahan ukuran layar (resize / rotate device)
+    useEffect(() => {
+        const handleResize = () => {
+            const mobile = window.innerWidth < 992;
+            setIsMobile(mobile);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     const userString = localStorage.getItem('user');
     const user = userString ? JSON.parse(userString) : { NamaLengkap: "Maria", Role: "Administrator" };
@@ -103,7 +121,6 @@ export default function MainLayout() {
         }
     ];
 
-    // Untuk bottom nav: batasi 5 item utama (semua item saat ini pas 5)
     const bottomNavItems = menuItems;
 
     const currentTopKey = location.pathname.split('/')[1] || 'dashboard';
@@ -140,9 +157,9 @@ export default function MainLayout() {
     };
 
     return (
-        <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
-            {/* Overlay gelap saat sider terbuka di mobile (desktop drawer lama, tetap dipakai utk breakpoint 992-... jika perlu) */}
-            {!collapsed && (
+        <Layout style={{ minHeight: "100vh", background: "#f8fafc", overflowX: "hidden" }}>
+            {/* Overlay gelap saat sider terbuka (khusus jika sidebar desktop dipakai) */}
+            {!collapsed && !isMobile && (
                 <div
                     className="sider-overlay"
                     onClick={() => setCollapsed(true)}
@@ -197,9 +214,10 @@ export default function MainLayout() {
             <Layout
                 className="main-layout-content"
                 style={{
-                    marginLeft: collapsed ? 0 : 260,
+                    marginLeft: isMobile ? 0 : (collapsed ? 0 : 260),
                     background: "transparent",
-                    transition: "margin-left 0.2s"
+                    transition: "margin-left 0.2s",
+                    width: isMobile ? "100%" : undefined,
                 }}
             >
                 <Header className="main-header" style={{
@@ -218,7 +236,6 @@ export default function MainLayout() {
                     flexWrap: "nowrap"
                 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px", minWidth: 0 }}>
-                        {/* Tombol fold sidebar disembunyikan di mobile via CSS (.sider-toggle-btn) */}
                         <Button
                             type="text"
                             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -239,7 +256,6 @@ export default function MainLayout() {
                                 height: "40px"
                             }}
                         />
-                        {/* Logo kecil muncul di mobile, menggantikan search yang hilang */}
                         <span className="mobile-brand">
                             Inven<span style={{ color: "#6366f1" }}>Sys</span>
                         </span>
@@ -357,6 +373,10 @@ export default function MainLayout() {
                 .mobile-brand { display: none; font-weight: 800; font-size: 17px; color: #0f172a; }
                 .bottom-nav { display: none; }
 
+                html, body {
+                    overflow-x: hidden;
+                }
+
                 /* ===== MOBILE & TABLET (<= 991px): sidebar hilang total, bottom nav muncul ===== */
                 @media (max-width: 991px) {
                     .main-sider { display: none !important; }
@@ -368,6 +388,8 @@ export default function MainLayout() {
 
                     .main-layout-content {
                         margin-left: 0 !important;
+                        width: 100% !important;
+                        max-width: 100vw !important;
                     }
 
                     .main-content {
