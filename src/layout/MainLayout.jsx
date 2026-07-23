@@ -1,39 +1,119 @@
-import React, { useState, useEffect } from "react";
-// ...import lain tetap sama
+import React, { useState } from "react";
+import { Layout, Menu, Dropdown, Space, Avatar, Input, Badge, Button } from "antd";
+import {
+    DashboardOutlined,
+    DatabaseOutlined,
+    ShoppingCartOutlined,
+    TeamOutlined,
+    LogoutOutlined,
+    DownOutlined,
+    SearchOutlined,
+    BellOutlined,
+    HistoryOutlined,
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+} from "@ant-design/icons";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
+
+const { Sider, Content, Header } = Layout;
 
 export default function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
-    const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const mobile = window.innerWidth < 992;
-            setIsMobile(mobile);
-            if (mobile) setCollapsed(true); // default tertutup di mobile
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    const userString = localStorage.getItem('user');
+    const user = userString ? JSON.parse(userString) : { NamaLengkap: "Maria", Role: "Administrator" };
+    const userName = user.NamaLengkap || "Guest";
 
-    // ...userString, user, handleLogout, profileMenu, menuItems tetap sama
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        navigate('/login');
+    };
 
+    const profileMenu = {
+        items: [
+            {
+                key: 'profile',
+                label: (
+                    <div style={{ padding: '8px 12px' }}>
+                        <div style={{ fontWeight: '600', color: '#1e293b' }}>{userName}</div>
+                        <div style={{ fontSize: '12px', color: '#64748b' }}>{user.Role}</div>
+                    </div>
+                ),
+            },
+            { type: 'divider' },
+            { key: 'settings', label: 'Account Settings' },
+            {
+                key: 'logout',
+                label: 'Sign Out',
+                icon: <LogoutOutlined />,
+                danger: true,
+                onClick: handleLogout
+            },
+        ]
+    };
+
+    const menuItems = [
+        { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
+        {
+            key: "master",
+            icon: <DatabaseOutlined />,
+            label: "Master Data",
+            children: [
+                { key: "barang", label: "Data Barang" },
+                { key: "supplier", label: "Data Supplier" },
+                { key: "gudang", label: "Data Gudang" },
+            ]
+        },
+        {
+            key: "transaksi",
+            icon: <ShoppingCartOutlined />,
+            label: "Transaksi",
+            children: [
+                { key: "pembelian", label: "Pembelian (Faktur)" },
+                { key: "mutasi", label: "Mutasi Stok" },
+            ]
+        },
+        {
+            key: "inventori",
+            icon: <HistoryOutlined />,
+            label: "Laporan Stok",
+            children: [
+                { key: "stok-gudang", label: "Stok per Gudang" },
+            ]
+        },
+        {
+            key: "pengaturan",
+            icon: <TeamOutlined />,
+            label: "User Management",
+            children: [
+                { key: "users", label: "Daftar Pengguna" },
+            ]
+        }
+    ];
+
+    // Klik menu di mobile -> auto collapse sider setelah navigasi
     const handleMenuClick = ({ key }) => {
         navigate(`/${key}`);
-        if (isMobile) setCollapsed(true);
+        if (window.innerWidth < 992) {
+            setCollapsed(true);
+        }
     };
 
     return (
         <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
-            {isMobile && !collapsed && (
-                <div className="sider-overlay" onClick={() => setCollapsed(true)} />
+            {/* Overlay gelap saat sider terbuka di mobile */}
+            {!collapsed && (
+                <div
+                    className="sider-overlay"
+                    onClick={() => setCollapsed(true)}
+                />
             )}
 
             <Sider
                 width={260}
-                collapsedWidth={isMobile ? 0 : 0}
+                collapsedWidth={0}
                 collapsed={collapsed}
                 onCollapse={setCollapsed}
                 breakpoint="lg"
@@ -46,15 +126,38 @@ export default function MainLayout() {
                     left: 0,
                     top: 0,
                     zIndex: 200,
-                    boxShadow: isMobile ? "4px 0 24px rgba(0,0,0,0.15)" : "4px 0 10px rgba(0,0,0,0.02)"
+                    boxShadow: "4px 0 10px rgba(0,0,0,0.02)"
                 }}
             >
-                {/* isi Sider tetap sama */}
+                <div style={{ padding: "30px 24px", display: "flex", alignItems: "center", gap: "12px" }}>
+                    <div style={{
+                        width: "35px", height: "35px",
+                        background: "linear-gradient(135deg, #6366f1 0%, #4338ca 100%)",
+                        borderRadius: "10px",
+                        display: "flex", justifyContent: "center", alignItems: "center",
+                        color: "#fff", fontWeight: "bold", fontSize: "14px",
+                        boxShadow: "0 4px 12px rgba(99, 102, 241, 0.3)",
+                        flexShrink: 0
+                    }}>E</div>
+                    <span style={{ fontWeight: "800", fontSize: "18px", color: "#0f172a", letterSpacing: "-0.5px", whiteSpace: "nowrap" }}>
+                        Inven<span style={{ color: "#6366f1" }}>Sys</span>
+                    </span>
+                </div>
+
+                <Menu
+                    mode="inline"
+                    selectedKeys={[location.pathname.split('/')[1] || 'dashboard']}
+                    defaultOpenKeys={['master', 'transaksi']}
+                    onClick={handleMenuClick}
+                    style={{ borderRight: 0, padding: "0 12px" }}
+                    items={menuItems}
+                    className="custom-sidebar-menu"
+                />
             </Sider>
 
             <Layout
                 style={{
-                    marginLeft: isMobile ? 0 : (collapsed ? 0 : 260),
+                    marginLeft: collapsed ? 0 : 260,
                     background: "transparent",
                     transition: "margin-left 0.2s"
                 }}
@@ -62,23 +165,77 @@ export default function MainLayout() {
                 <Header style={{
                     background: "rgba(255, 255, 255, 0.8)",
                     backdropFilter: "blur(12px)",
-                    padding: "0 12px",
+                    padding: "0 16px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    height: "64px",
+                    height: "75px",
                     position: "sticky",
                     top: 0,
                     zIndex: 99,
                     borderBottom: "1px solid rgba(226, 232, 240, 0.7)",
-                    gap: "8px",
+                    gap: "12px",
                     flexWrap: "nowrap"
                 }}>
-                    {/* isi Header tetap sama, hanya height diturunkan jadi 64px utk mobile */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "15px", minWidth: 0 }}>
+                        <Button
+                            type="text"
+                            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                            onClick={() => setCollapsed(!collapsed)}
+                            style={{ color: "#64748b", flexShrink: 0 }}
+                        />
+                        <Input
+                            placeholder="Quick search..."
+                            variant="filled"
+                            prefix={<SearchOutlined style={{ color: "#94a3b8" }} />}
+                            className="quick-search"
+                            style={{
+                                width: "320px",
+                                borderRadius: "10px",
+                                background: "#f1f5f9",
+                                border: "none",
+                                height: "40px"
+                            }}
+                        />
+                    </div>
+
+                    <div style={{ display: "flex", alignItems: "center", gap: "16px", flexShrink: 0 }}>
+                        <Badge count={3} dot offset={[-2, 5]} color="#6366f1">
+                            <Button
+                                type="text"
+                                shape="circle"
+                                icon={<BellOutlined style={{ fontSize: "20px", color: "#64748b" }} />}
+                            />
+                        </Badge>
+
+                        <div className="header-divider" style={{ width: "1px", height: "24px", background: "#e2e8f0" }} />
+
+                        <Dropdown menu={profileMenu} trigger={['click']} placement="bottomRight">
+                            <Space style={{ cursor: 'pointer' }}>
+                                <div className="user-name-block" style={{ textAlign: "right", lineHeight: "1.4" }}>
+                                    <div style={{ fontWeight: "700", color: "#1e293b", fontSize: "14px" }}>{userName}</div>
+                                    <div style={{ fontSize: "11px", color: "#94a3b8", fontWeight: "500" }}>{user.Role}</div>
+                                </div>
+                                <Avatar
+                                    size={40}
+                                    src="https://api.dicebear.com/7.x/avataaars/svg?seed=Maria"
+                                    style={{
+                                        backgroundColor: '#f1f5f9',
+                                        border: "2px solid #e2e8f0",
+                                        padding: "2px"
+                                    }}
+                                />
+                                <DownOutlined style={{ fontSize: '10px', color: "#94a3b8" }} />
+                            </Space>
+                        </Dropdown>
+                    </div>
                 </Header>
 
-                <Content style={{ padding: "16px 12px" }}>
-                    <div style={{ minHeight: "calc(100vh - 120px)", animation: "fadeIn 0.5s ease-in-out" }}>
+                <Content style={{ padding: "24px 16px" }}>
+                    <div style={{
+                        minHeight: "calc(100vh - 140px)",
+                        animation: "fadeIn 0.5s ease-in-out"
+                    }}>
                         <Outlet />
                     </div>
                 </Content>
@@ -100,17 +257,14 @@ export default function MainLayout() {
                     to { opacity: 1; transform: translateY(0); }
                 }
                 .sider-overlay {
-                    position: fixed;
-                    inset: 0;
-                    background: rgba(15, 23, 42, 0.45);
-                    z-index: 150;
+                    display: none;
                 }
                 @media (max-width: 991px) {
-                    .quick-search { width: 160px !important; }
+                    .quick-search { width: 180px !important; }
                     .user-name-block { display: none; }
                 }
                 @media (max-width: 576px) {
-                    .quick-search { display: none !important; }
+                    .quick-search { display: none; }
                     .header-divider { display: none; }
                 }
             `}</style>
