@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layout, Menu, Dropdown, Space, Avatar, Input, Badge, Button } from "antd";
+import { Layout, Menu, Dropdown, Space, Avatar, Input, Badge, Button, Drawer } from "antd";
 import {
     DashboardOutlined,
     DatabaseOutlined,
@@ -12,6 +12,7 @@ import {
     HistoryOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
+    RightOutlined,
 } from "@ant-design/icons";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
@@ -21,13 +22,15 @@ export default function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Sidebar otomatis tertutup di awal jika layar mobile (< 992px)
     const [collapsed, setCollapsed] = useState(() => {
         if (typeof window !== "undefined") {
             return window.innerWidth < 992;
         }
         return false;
     });
+
+    // State untuk bottom sheet (submenu di mobile)
+    const [activeSubmenu, setActiveSubmenu] = useState(null); // menyimpan object menu yang punya children
 
     const userString = localStorage.getItem('user');
     const user = userString ? JSON.parse(userString) : { NamaLengkap: "Maria", Role: "Administrator" };
@@ -100,7 +103,21 @@ export default function MainLayout() {
         }
     ];
 
-    // Klik menu di mobile -> auto collapse sider setelah navigasi
+    // Untuk bottom nav: batasi 5 item utama (semua item saat ini pas 5)
+    const bottomNavItems = menuItems;
+
+    const currentTopKey = location.pathname.split('/')[1] || 'dashboard';
+
+    // Cari parent key aktif (untuk highlight bottom nav saat child aktif)
+    const findParentKey = (childKey) => {
+        for (const item of menuItems) {
+            if (item.key === childKey) return item.key;
+            if (item.children?.some(c => c.key === childKey)) return item.key;
+        }
+        return 'dashboard';
+    };
+    const activeBottomKey = findParentKey(currentTopKey);
+
     const handleMenuClick = ({ key }) => {
         navigate(`/${key}`);
         if (window.innerWidth < 992) {
@@ -108,9 +125,23 @@ export default function MainLayout() {
         }
     };
 
+    // Klik item bottom nav
+    const handleBottomNavClick = (item) => {
+        if (item.children && item.children.length > 0) {
+            setActiveSubmenu(item);
+        } else {
+            navigate(`/${item.key}`);
+        }
+    };
+
+    const handleBottomSheetSelect = (childKey) => {
+        navigate(`/${childKey}`);
+        setActiveSubmenu(null);
+    };
+
     return (
         <Layout style={{ minHeight: "100vh", background: "#f8fafc" }}>
-            {/* Overlay gelap saat sider terbuka di mobile */}
+            {/* Overlay gelap saat sider terbuka di mobile (desktop drawer lama, tetap dipakai utk breakpoint 992-... jika perlu) */}
             {!collapsed && (
                 <div
                     className="sider-overlay"
@@ -154,7 +185,7 @@ export default function MainLayout() {
 
                 <Menu
                     mode="inline"
-                    selectedKeys={[location.pathname.split('/')[1] || 'dashboard']}
+                    selectedKeys={[currentTopKey]}
                     defaultOpenKeys={['master', 'transaksi']}
                     onClick={handleMenuClick}
                     style={{ borderRight: 0, padding: "0 12px" }}
@@ -187,10 +218,12 @@ export default function MainLayout() {
                     flexWrap: "nowrap"
                 }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "15px", minWidth: 0 }}>
+                        {/* Tombol fold sidebar disembunyikan di mobile via CSS (.sider-toggle-btn) */}
                         <Button
                             type="text"
                             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                             onClick={() => setCollapsed(!collapsed)}
+                            className="sider-toggle-btn"
                             style={{ color: "#64748b", flexShrink: 0 }}
                         />
                         <Input
@@ -206,6 +239,10 @@ export default function MainLayout() {
                                 height: "40px"
                             }}
                         />
+                        {/* Logo kecil muncul di mobile, menggantikan search yang hilang */}
+                        <span className="mobile-brand">
+                            Inven<span style={{ color: "#6366f1" }}>Sys</span>
+                        </span>
                     </div>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "16px", flexShrink: 0 }}>
@@ -250,6 +287,57 @@ export default function MainLayout() {
                 </Content>
             </Layout>
 
+            {/* ===== BOTTOM NAVIGATION BAR (khusus mobile) ===== */}
+            <div className="bottom-nav">
+                {bottomNavItems.map((item) => {
+                    const isActive = activeBottomKey === item.key;
+                    return (
+                        <div
+                            key={item.key}
+                            className={`bottom-nav-item ${isActive ? "active" : ""}`}
+                            onClick={() => handleBottomNavClick(item)}
+                        >
+                            <div className="bottom-nav-icon">{item.icon}</div>
+                            <span className="bottom-nav-label">{item.label}</span>
+                        </div>
+                    );
+                })}
+            </div>
+
+            {/* ===== BOTTOM SHEET untuk submenu (mobile) ===== */}
+            <Drawer
+                placement="bottom"
+                open={!!activeSubmenu}
+                onClose={() => setActiveSubmenu(null)}
+                closable={false}
+                height="auto"
+                className="submenu-sheet"
+                styles={{
+                    body: { padding: "8px 0 24px" },
+                    content: { borderRadius: "20px 20px 0 0" }
+                }}
+            >
+                {activeSubmenu && (
+                    <>
+                        <div className="submenu-sheet-handle" />
+                        <div className="submenu-sheet-title">
+                            {activeSubmenu.icon}
+                            <span>{activeSubmenu.label}</span>
+                        </div>
+                        {activeSubmenu.children.map((child) => (
+                            <div
+                                key={child.key}
+                                className={`submenu-sheet-item ${currentTopKey === child.key ? "active" : ""}`}
+                                onClick={() => handleBottomSheetSelect(child.key)}
+                            >
+                                <span>{child.label}</span>
+                                <RightOutlined style={{ fontSize: "12px", color: "#94a3b8" }} />
+                            </div>
+                        ))}
+                    </>
+                )}
+            </Drawer>
+
             <style>{`
                 .custom-sidebar-menu.ant-menu-light .ant-menu-item-selected {
                     background-color: #f5f3ff !important;
@@ -265,57 +353,128 @@ export default function MainLayout() {
                     from { opacity: 0; transform: translateY(10px); }
                     to { opacity: 1; transform: translateY(0); }
                 }
-                .sider-overlay {
-                    display: none;
-                }
+                .sider-overlay { display: none; }
+                .mobile-brand { display: none; font-weight: 800; font-size: 17px; color: #0f172a; }
+                .bottom-nav { display: none; }
 
-                /* ===== TABLET & MOBILE (<= 991px) ===== */
+                /* ===== MOBILE & TABLET (<= 991px): sidebar hilang total, bottom nav muncul ===== */
                 @media (max-width: 991px) {
-                    .quick-search { width: 180px !important; }
+                    .main-sider { display: none !important; }
+                    .sider-overlay { display: none !important; }
+                    .sider-toggle-btn { display: none !important; }
+                    .quick-search { display: none !important; }
+                    .mobile-brand { display: inline-block; }
                     .user-name-block { display: none; }
 
-                    /* Sidebar jadi drawer/overlay: konten tidak ikut terdorong */
                     .main-layout-content {
                         margin-left: 0 !important;
                     }
 
-                    /* Lapisan gelap di belakang sider saat terbuka */
-                    .sider-overlay {
-                        display: block !important;
+                    .main-content {
+                        padding: 16px 10px !important;
+                        padding-bottom: 88px !important; /* ruang utk bottom nav */
+                    }
+
+                    .bottom-nav {
+                        display: flex;
                         position: fixed;
-                        inset: 0;
-                        background: rgba(15, 23, 42, 0.45);
-                        z-index: 150;
-                        animation: fadeIn 0.2s ease-in-out;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        height: 64px;
+                        background: rgba(255, 255, 255, 0.95);
+                        backdrop-filter: blur(14px);
+                        border-top: 1px solid #e2e8f0;
+                        box-shadow: 0 -4px 16px rgba(0,0,0,0.06);
+                        z-index: 300;
+                        padding-bottom: env(safe-area-inset-bottom, 0px);
+                    }
+
+                    .bottom-nav-item {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        gap: 3px;
+                        cursor: pointer;
+                        color: #94a3b8;
+                        transition: color 0.15s ease;
+                        -webkit-tap-highlight-color: transparent;
+                    }
+
+                    .bottom-nav-icon {
+                        font-size: 20px;
+                        line-height: 1;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: transform 0.15s ease;
+                    }
+
+                    .bottom-nav-item.active {
+                        color: #6366f1;
+                    }
+                    .bottom-nav-item.active .bottom-nav-icon {
+                        transform: translateY(-1px) scale(1.08);
+                    }
+
+                    .bottom-nav-label {
+                        font-size: 10.5px;
+                        font-weight: 600;
+                        white-space: nowrap;
                     }
                 }
 
-                /* ===== MOBILE (<= 576px) ===== */
                 @media (max-width: 576px) {
-                    .quick-search { display: none; }
                     .header-divider { display: none; }
-
                     .main-header {
                         height: 64px !important;
                         padding: 0 12px !important;
                     }
-
-                    .main-content {
-                        padding: 16px 10px !important;
-                    }
                 }
 
-                /* ===== MOBILE SANGAT SEMPIT (<= 400px, mis. layar Android kecil) ===== */
                 @media (max-width: 400px) {
-                    .main-sider.ant-layout-sider {
-                        width: 82vw !important;
-                        max-width: 82vw !important;
-                        flex: 0 0 82vw !important;
-                    }
+                    .bottom-nav-label { font-size: 9.5px; }
+                    .main-content { padding: 14px 8px !important; padding-bottom: 84px !important; }
+                }
 
-                    .main-content {
-                        padding: 14px 8px !important;
-                    }
+                /* ===== BOTTOM SHEET (submenu) ===== */
+                .submenu-sheet-handle {
+                    width: 40px;
+                    height: 4px;
+                    background: #e2e8f0;
+                    border-radius: 4px;
+                    margin: 0 auto 14px;
+                }
+                .submenu-sheet-title {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    padding: 0 20px 12px;
+                    font-weight: 700;
+                    font-size: 15px;
+                    color: #1e293b;
+                    border-bottom: 1px solid #f1f5f9;
+                    margin-bottom: 6px;
+                }
+                .submenu-sheet-title svg { color: #6366f1; }
+                .submenu-sheet-item {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    padding: 14px 20px;
+                    font-size: 14.5px;
+                    color: #334155;
+                    cursor: pointer;
+                }
+                .submenu-sheet-item:active {
+                    background: #f5f3ff;
+                }
+                .submenu-sheet-item.active {
+                    color: #6366f1;
+                    font-weight: 600;
+                    background: #f5f3ff;
                 }
             `}</style>
         </Layout>
