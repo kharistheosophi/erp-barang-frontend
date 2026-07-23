@@ -42,7 +42,7 @@ const StokGudang = () => {
   const loadReferences = async () => {
     try {
       const resBrg = await API.get("/barang/");
-      const resGdg = await API.get("/gudang/"); // Asumsi endpoint gudang tersedia
+      const resGdg = await API.get("/gudang/");
       setListBarang(resBrg.data.data);
       setListGudang(resGdg.data.data);
     } catch (e) {

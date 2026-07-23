@@ -8,7 +8,7 @@ import {
   SaveOutlined, PrinterOutlined, CloseCircleOutlined, FileTextOutlined 
 } from "@ant-design/icons";
 import dayjs from "dayjs";
-import axios from "axios";
+import API from "../services/api";
 import { useReactToPrint } from "react-to-print";
 import InvoicePembelianPrint from "./InvoicePembelianPrint";
 

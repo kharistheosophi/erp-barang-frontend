@@ -28,9 +28,9 @@ const WelcomeUser = () => {
             try {
                 // 1. Parse string user dari localStorage
                 const userData = JSON.parse(storedUserString);
-                // 2. Jika 'nama' ada, set ke state
-                if (userData && userData.nama) {
-                    setRawUserName(userData.nama);
+                // 2. Backend login.py mengembalikan field "NamaLengkap", bukan "nama"
+                if (userData && userData.NamaLengkap) {
+                    setRawUserName(userData.NamaLengkap);
                 }
             } catch (e) {
                 console.error("Gagal parse user data dari localStorage:", e);
