@@ -8,7 +8,7 @@ import {
   DeleteOutlined, BoxPlotOutlined, InfoCircleOutlined, DollarOutlined,
   SearchOutlined
 } from "@ant-design/icons";
-import API from "./services/api"; // sesuaikan path relatif ke file api.jsx kamu
+import API from "../services/api";
 
 const { Title, Text } = Typography;
 
