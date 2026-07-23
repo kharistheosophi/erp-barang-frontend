@@ -7,7 +7,7 @@ import {
   ReloadOutlined, SearchOutlined, 
   ArrowUpOutlined, ArrowDownOutlined, HistoryOutlined 
 } from "@ant-design/icons";
-import axios from "axios";
+import API from "../services/api";
 
 const { Title, Text } = Typography;
 
@@ -19,7 +19,7 @@ const MutasiStok = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/mutasi/");
+      const response = await API.get("/mutasi/");
       if (response.data.success) {
         setData(response.data.data);
       }

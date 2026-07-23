@@ -7,7 +7,7 @@ import {
   ReloadOutlined, PlusOutlined, EditOutlined, 
   DeleteOutlined, HomeOutlined, SearchOutlined, WarningOutlined
 } from "@ant-design/icons";
-import axios from "axios";
+import API from "../services/api";
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -27,7 +27,7 @@ const StokGudang = () => {
   const loadData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/stokgudang/");
+      const response = await API.get("/stokgudang/");
       if (response.data.success) {
         setData(response.data.data);
       }
@@ -41,8 +41,8 @@ const StokGudang = () => {
   // Mengambil data referensi untuk Select Box
   const loadReferences = async () => {
     try {
-      const resBrg = await axios.get("http://localhost:5000/barang/");
-      const resGdg = await axios.get("http://localhost:5000/gudang/"); // Asumsi endpoint gudang tersedia
+      const resBrg = await API.get("/barang/");
+      const resGdg = await API.get("/gudang/"); // Asumsi endpoint gudang tersedia
       setListBarang(resBrg.data.data);
       setListGudang(resGdg.data.data);
     } catch (e) {
@@ -67,7 +67,7 @@ const StokGudang = () => {
       onOk: async () => {
         try {
           // Menyesuaikan dengan route backend /<kode_gudang>/<kode_brg>
-          await axios.delete(`http://localhost:5000/stokgudang/${kodeGudang}/${kodeBrg}`);
+          await API.delete(`/stokgudang/${kodeGudang}/${kodeBrg}`);
           message.success("Data stok berhasil dihapus");
           loadData();
         } catch (error) {
@@ -82,10 +82,10 @@ const StokGudang = () => {
       const values = await form.validateFields();
       if (editingItem) {
         // Update menggunakan 2 parameter primary key
-        await axios.put(`http://localhost:5000/stokgudang/${editingItem.KodeGudang}/${editingItem.KodeBrg}`, values);
+        await API.put(`/stokgudang/${editingItem.KodeGudang}/${editingItem.KodeBrg}`, values);
         message.success("Stok diperbarui");
       } else {
-        await axios.post("http://localhost:5000/stokgudang/", values);
+        await API.post("/stokgudang/", values);
         message.success("Stok baru ditambahkan");
       }
       setIsModalOpen(false);
