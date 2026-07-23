@@ -20,7 +20,6 @@ import {
 } from "recharts";
 
 const Dashboard = () => {
-  // Data dummy untuk statistik
   const stats = [
     {
       title: "Total Revenue",
@@ -51,6 +50,7 @@ const Dashboard = () => {
       iconColor: "#F5222D",
     },
   ];
+
   const invoiceData = [
     { month: "Jan", amount: 4000 },
     { month: "Feb", amount: 3000 },
@@ -70,14 +70,15 @@ const Dashboard = () => {
   ];
 
   return (
-    <div style={{ background: "#F0F2F5", padding: "20px", minHeight: "100vh" }}>
+    <div className="dashboard-wrapper" style={{ background: "#F0F2F5", padding: "20px", minHeight: "100vh" }}>
       <WelcomeUser />
 
-      <Row gutter={[24, 24]} style={{ marginTop: "24px" }}>
+      <Row gutter={[24, 24]} style={{ marginTop: "24px" }} className="stats-row">
         {stats.map((item, idx) => (
-          <Col xs={24} sm={12} lg={6} key={idx}>
+          <Col xs={12} sm={12} lg={6} key={idx}>
             <Card
               bordered={false}
+              className="stat-card"
               style={{
                 borderRadius: "16px",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
@@ -85,6 +86,7 @@ const Dashboard = () => {
             >
               <div style={{ display: "flex", alignItems: "center" }}>
                 <div
+                  className="stat-icon-box"
                   style={{
                     width: "48px",
                     height: "48px",
@@ -96,13 +98,14 @@ const Dashboard = () => {
                     fontSize: "24px",
                     color: item.iconColor,
                     marginRight: "16px",
+                    flexShrink: 0
                   }}
                 >
                   {item.icon}
                 </div>
                 <Statistic
                   title={
-                    <span style={{ color: "#8C8C8C", fontWeight: 500 }}>
+                    <span className="stat-title" style={{ color: "#8C8C8C", fontWeight: 500 }}>
                       {item.title}
                     </span>
                   }
@@ -110,6 +113,7 @@ const Dashboard = () => {
                   precision={2}
                   prefix="$"
                   valueStyle={{ fontWeight: "bold", fontSize: "20px" }}
+                  className="stat-value"
                 />
               </div>
             </Card>
@@ -122,13 +126,14 @@ const Dashboard = () => {
           <Card
             title="Invoices"
             bordered={false}
-            style={{ borderRadius: "16px", height: "300px" }}
+            className="chart-card"
+            style={{ borderRadius: "16px" }}
           >
             <ResponsiveContainer width="100%" height={220}>
-              <LineChart data={invoiceData}>
+              <LineChart data={invoiceData} margin={{ left: -20, right: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
+                <XAxis dataKey="month" fontSize={12} />
+                <YAxis fontSize={12} />
                 <Tooltip />
                 <Line
                   type="monotone"
@@ -146,13 +151,14 @@ const Dashboard = () => {
           <Card
             title="Sales Forecast"
             bordered={false}
-            style={{ borderRadius: "16px", height: "300px" }}
+            className="chart-card"
+            style={{ borderRadius: "16px" }}
           >
             <ResponsiveContainer width="100%" height={220}>
-              <BarChart data={salesForecastData}>
+              <BarChart data={salesForecastData} margin={{ left: -20, right: 10 }}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
+                <XAxis dataKey="month" fontSize={12} />
+                <YAxis fontSize={12} />
                 <Tooltip />
                 <Bar dataKey="sales" radius={[8, 8, 0, 0]} fill="#52C41A" />
               </BarChart>
@@ -160,6 +166,33 @@ const Dashboard = () => {
           </Card>
         </Col>
       </Row>
+
+      <style>{`
+        .chart-card .ant-card-body {
+          padding-top: 8px;
+        }
+
+        /* Tablet */
+        @media (max-width: 768px) {
+          .dashboard-wrapper { padding: 16px !important; }
+        }
+
+        /* Mobile */
+        @media (max-width: 576px) {
+          .dashboard-wrapper { padding: 12px !important; }
+          .stat-card .ant-card-body { padding: 14px !important; }
+          .stat-icon-box { width: 40px !important; height: 40px !important; font-size: 20px !important; }
+          .stat-value .ant-statistic-content { font-size: 17px !important; }
+          .stat-title { font-size: 12px !important; }
+        }
+
+        /* Mobile sangat sempit */
+        @media (max-width: 360px) {
+          .stat-card .ant-card-body { padding: 10px !important; }
+          .stat-icon-box { width: 34px !important; height: 34px !important; font-size: 18px !important; margin-right: 10px !important; }
+          .stat-value .ant-statistic-content { font-size: 15px !important; }
+        }
+      `}</style>
     </div>
   );
 };
