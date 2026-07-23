@@ -20,7 +20,14 @@ const { Sider, Content, Header } = Layout;
 export default function MainLayout() {
     const navigate = useNavigate();
     const location = useLocation();
-    const [collapsed, setCollapsed] = useState(false);
+
+    // Sidebar otomatis tertutup di awal jika layar mobile (< 992px)
+    const [collapsed, setCollapsed] = useState(() => {
+        if (typeof window !== "undefined") {
+            return window.innerWidth < 992;
+        }
+        return false;
+    });
 
     const userString = localStorage.getItem('user');
     const user = userString ? JSON.parse(userString) : { NamaLengkap: "Maria", Role: "Administrator" };
@@ -119,6 +126,7 @@ export default function MainLayout() {
                 breakpoint="lg"
                 theme="light"
                 trigger={null}
+                className="main-sider"
                 style={{
                     borderRight: "1px solid #e2e8f0",
                     position: "fixed",
@@ -156,13 +164,14 @@ export default function MainLayout() {
             </Sider>
 
             <Layout
+                className="main-layout-content"
                 style={{
                     marginLeft: collapsed ? 0 : 260,
                     background: "transparent",
                     transition: "margin-left 0.2s"
                 }}
             >
-                <Header style={{
+                <Header className="main-header" style={{
                     background: "rgba(255, 255, 255, 0.8)",
                     backdropFilter: "blur(12px)",
                     padding: "0 16px",
@@ -231,7 +240,7 @@ export default function MainLayout() {
                     </div>
                 </Header>
 
-                <Content style={{ padding: "24px 16px" }}>
+                <Content className="main-content" style={{ padding: "24px 16px" }}>
                     <div style={{
                         minHeight: "calc(100vh - 140px)",
                         animation: "fadeIn 0.5s ease-in-out"
@@ -259,13 +268,54 @@ export default function MainLayout() {
                 .sider-overlay {
                     display: none;
                 }
+
+                /* ===== TABLET & MOBILE (<= 991px) ===== */
                 @media (max-width: 991px) {
                     .quick-search { width: 180px !important; }
                     .user-name-block { display: none; }
+
+                    /* Sidebar jadi drawer/overlay: konten tidak ikut terdorong */
+                    .main-layout-content {
+                        margin-left: 0 !important;
+                    }
+
+                    /* Lapisan gelap di belakang sider saat terbuka */
+                    .sider-overlay {
+                        display: block !important;
+                        position: fixed;
+                        inset: 0;
+                        background: rgba(15, 23, 42, 0.45);
+                        z-index: 150;
+                        animation: fadeIn 0.2s ease-in-out;
+                    }
                 }
+
+                /* ===== MOBILE (<= 576px) ===== */
                 @media (max-width: 576px) {
                     .quick-search { display: none; }
                     .header-divider { display: none; }
+
+                    .main-header {
+                        height: 64px !important;
+                        padding: 0 12px !important;
+                    }
+
+                    .main-content {
+                        padding: 16px 10px !important;
+                    }
+                }
+
+                /* ===== MOBILE SANGAT SEMPIT (<= 400px, mis. layar Android kecil) ===== */
+                @media (max-width: 400px) {
+                    .main-sider.ant-layout-sider {
+                        width: 82vw !important;
+                        max-width: 82vw !important;
+                        flex: 0 0 82vw !important;
+                    }
+
+                    .main-content {
+                        padding: 14px 8px !important;
+                    }
                 }
             `}</style>
         </Layout>
