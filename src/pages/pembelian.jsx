@@ -211,16 +211,17 @@ export default function PembelianFaktur() {
   };
 
   const columns = [
-    { title: "Kode", dataIndex: "KodeBrg", key: "KodeBrg", width: '12.5%' },
-    { title: "Nama Barang", dataIndex: "NamaBrg", key: "NamaBrg", width: '29.1%' },
-    { title: "Qty", dataIndex: "Qty", key: "Qty", align: 'right', width: '8.3%' },
-    { title: "Harga", dataIndex: "Harga", key: "Harga", align: 'right', width: '16.6%', render: v => Number(v).toLocaleString() },
-    { title: "Disc", dataIndex: "Disc", key: "Disc", align: 'right', width: '12.5%', render: v => <Text type="danger">{Number(v).toLocaleString()}</Text> },
-    { title: "Subtotal", dataIndex: "Subtotal", key: "Subtotal", align: 'right', width: '16.6%', render: v => <Text strong style={{ color: '#6366f1' }}>{Number(v).toLocaleString()}</Text> },
+    { title: "Kode", dataIndex: "KodeBrg", key: "KodeBrg", width: 100 },
+    { title: "Nama Barang", dataIndex: "NamaBrg", key: "NamaBrg", width: 220 },
+    { title: "Qty", dataIndex: "Qty", key: "Qty", align: 'right', width: 70 },
+    { title: "Harga", dataIndex: "Harga", key: "Harga", align: 'right', width: 120, render: v => Number(v).toLocaleString() },
+    { title: "Disc", dataIndex: "Disc", key: "Disc", align: 'right', width: 100, render: v => <Text type="danger">{Number(v).toLocaleString()}</Text> },
+    { title: "Subtotal", dataIndex: "Subtotal", key: "Subtotal", align: 'right', width: 130, render: v => <Text strong style={{ color: '#6366f1' }}>{Number(v).toLocaleString()}</Text> },
     {
       title: "",
       width: 50,
       align: 'center',
+      fixed: 'right',
       render: (_, r) => (
         <Button
           type="text"
@@ -246,12 +247,13 @@ export default function PembelianFaktur() {
   ];
 
   return (
-    <Row gutter={24} style={{ margin: 0 }}>
+    // xs: form entri tampil duluan (order 1), riwayat pindah ke bawah (order 2)
+    <Row gutter={[16, 16]} style={{ margin: 0, overflowX: "hidden" }}>
       {/* SIDEBAR RIWAYAT */}
-      <Col span={6} className="no-print">
+      <Col xs={24} lg={6} order={2} className="no-print">
         <Card 
           title={<Space><FileTextOutlined style={{ color: '#6366f1' }} /> <Text strong>Riwayat Faktur</Text></Space>} 
-          styles={{ body: { padding: 0, height: '75vh', overflowY: 'auto' } }}
+          styles={{ body: { padding: 0, maxHeight: '60vh', overflowY: 'auto' } }}
           style={{ borderRadius: '12px' }}
         >
           {loadingHistory && (
@@ -271,7 +273,7 @@ export default function PembelianFaktur() {
              return (
               <div key={index} onClick={() => fetchDetailFaktur(fakturID)} className="history-item-hover"
                 style={{ padding: '12px 20px', cursor: 'pointer', borderBottom: '1px solid #f1f5f9' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4 }}>
                   <Text strong>{fakturID}</Text>
                   <Tag color="blue" style={{ fontSize: '10px' }}>Purchased</Tag>
                 </div>
@@ -283,23 +285,23 @@ export default function PembelianFaktur() {
       </Col>
 
       {/* FORM UTAMA */}
-      <Col span={18} className="print-full-width">
-        <Card style={{ borderRadius: '12px' }}>
+      <Col xs={24} lg={18} order={1} className="print-full-width">
+        <Card style={{ borderRadius: '12px' }} styles={{ body: { padding: '16px' } }}>
           <Form form={form} layout="vertical">
-            <Row justify="space-between" align="middle" style={{ marginBottom: 20 }}>
-              <Col><Title level={4}>Entry Pembelian Barang</Title></Col>
-              <Col>
+            <Row justify="space-between" align="middle" gutter={[8, 8]} style={{ marginBottom: 20 }}>
+              <Col xs={24} sm="auto"><Title level={4} style={{ margin: 0 }}>Entry Pembelian Barang</Title></Col>
+              <Col xs={24} sm="auto">
                 <Form.Item name="NoFaktur" label="No. Faktur" style={{ margin: 0 }}>
-                  <Input placeholder="NB42681" style={{ width: 200 }} />
+                  <Input placeholder="NB42681" style={{ width: '100%' }} />
                 </Form.Item>
               </Col>
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col xs={24} md={12}>
                 <Row gutter={8}>
-                  <Col span={10}><Form.Item label="Tanggal" name="TglFaktur" initialValue={dayjs()}><DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" /></Form.Item></Col>
-                  <Col span={14}>
+                  <Col xs={24} sm={10}><Form.Item label="Tanggal" name="TglFaktur" initialValue={dayjs()}><DatePicker style={{ width: '100%' }} format="DD/MM/YYYY" /></Form.Item></Col>
+                  <Col xs={24} sm={14}>
                     <Form.Item label="Supplier" name="KodeSupplier">
                       <Input readOnly onClick={() => setIsModalSupplierOpen(true)} suffix={<SearchOutlined />} />
                     </Form.Item>
@@ -307,121 +309,133 @@ export default function PembelianFaktur() {
                 </Row>
                 <Form.Item label="Notes" name="Keterangan"><Input placeholder="..." /></Form.Item>
               </Col>
-              <Col span={12}>
+              <Col xs={24} md={12}>
                 <Row gutter={8}>
-                  <Col span={12}>
+                  <Col xs={12}>
                     <Form.Item label="Gudang" name="KodeGudang" initialValue="G001">
-                      <Select options={[
-                        { value: 'G001', label: 'G001 - Gudang Utama' },
-                        { value: 'G002', label: 'G002 - Gudang Cabang' },
-                        { value: 'G003', label: 'G003 - Gudang Transit' }
-                      ]} />
+                      <Select
+                        style={{ width: '100%' }}
+                        options={[
+                          { value: 'G001', label: 'G001 - Gudang Utama' },
+                          { value: 'G002', label: 'G002 - Gudang Cabang' },
+                          { value: 'G003', label: 'G003 - Gudang Transit' }
+                        ]}
+                      />
                     </Form.Item>
                   </Col>
-                  <Col span={12}><Form.Item label="Pembayaran" name="Type" initialValue="1"><Select options={[{value: '0', label: 'Tunai'}, {value: '1', label: 'Kredit'}]} /></Form.Item></Col>
+                  <Col xs={12}><Form.Item label="Pembayaran" name="Type" initialValue="1"><Select style={{ width: '100%' }} options={[{value: '0', label: 'Tunai'}, {value: '1', label: 'Kredit'}]} /></Form.Item></Col>
                 </Row>
                 <Row gutter={8}>
-                  <Col span={12}><Form.Item label="PPN" name="PpnType" initialValue="1"><Select options={[{value: '1', label: 'PPN 11%'}, {value: '0', label: 'Non PPN'}]} /></Form.Item></Col>
-                  <Col span={12}><Form.Item label="Jatuh Tempo" name="TglJt"><DatePicker style={{ width: '100%' }} /></Form.Item></Col>
+                  <Col xs={12}><Form.Item label="PPN" name="PpnType" initialValue="1"><Select style={{ width: '100%' }} options={[{value: '1', label: 'PPN 11%'}, {value: '0', label: 'Non PPN'}]} /></Form.Item></Col>
+                  <Col xs={12}><Form.Item label="Jatuh Tempo" name="TglJt"><DatePicker style={{ width: '100%' }} /></Form.Item></Col>
                 </Row>
               </Col>
             </Row>
 
-            {/* AREA INPUT SEJAJAR TABEL */}
-            <div style={{ 
-              background: '#fff', 
-              border: '1px solid #f0f0f0', 
-              borderBottom: 'none', 
-              padding: '8px 16px', 
-              borderTopLeftRadius: '8px', 
-              borderTopRightRadius: '8px' 
-            }}>
-              <Row gutter={12} align="middle" className="input-row-table">
-                <Col span={3}>
-                  <Form.Item name="tempKode" noStyle>
-                    <Input 
-                      id="input_tempKode" 
-                      placeholder="Kode" 
-                      onPressEnter={() => document.getElementById("input_tempNama")?.focus()} 
+            {/* AREA INPUT SEJAJAR TABEL - dibuat bisa scroll horizontal & wrap di layar kecil */}
+            <div style={{ overflowX: 'auto' }}>
+              <div style={{ 
+                background: '#fff', 
+                border: '1px solid #f0f0f0', 
+                borderBottom: 'none', 
+                padding: '8px 16px', 
+                borderTopLeftRadius: '8px', 
+                borderTopRightRadius: '8px',
+                minWidth: 640
+              }}>
+                <Row gutter={[8, 8]} align="middle" className="input-row-table">
+                  <Col xs={12} sm={3}>
+                    <Form.Item name="tempKode" noStyle>
+                      <Input 
+                        id="input_tempKode" 
+                        placeholder="Kode" 
+                        onPressEnter={() => document.getElementById("input_tempNama")?.focus()} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={12} sm={7}>
+                    <Form.Item name="tempNama" noStyle>
+                      <Input 
+                        id="input_tempNama" 
+                        placeholder="Nama Barang (Isi Manual)" 
+                        onPressEnter={() => document.getElementById("input_tempQty")?.focus()}
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={8} sm={2}>
+                    <Form.Item name="tempQty" noStyle>
+                      <InputNumber 
+                        id="input_tempQty" 
+                        placeholder="Qty"
+                        style={{ width: '100%' }}
+                        onChange={calculateSubtotal}
+                        onPressEnter={() => document.getElementById("input_tempHarga")?.focus()} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={8} sm={4}>
+                    <Form.Item name="tempHarga" noStyle>
+                      <InputNumber 
+                        id="input_tempHarga" 
+                        placeholder="Harga"
+                        style={{ width: '100%' }}
+                        onChange={calculateSubtotal}
+                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                        onPressEnter={() => document.getElementById("input_tempDisc")?.focus()} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={8} sm={3}>
+                    <Form.Item name="tempDisc" noStyle>
+                      <InputNumber 
+                        id="input_tempDisc" 
+                        placeholder="Disc"
+                        style={{ width: '100%' }}
+                        onChange={calculateSubtotal}
+                        onPressEnter={() => document.getElementById("input_tempSubtotal")?.focus()} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={20} sm={4}>
+                    <Form.Item name="tempSubtotal" noStyle>
+                      <InputNumber 
+                        id="input_tempSubtotal" 
+                        placeholder="Subtotal" 
+                        style={{ width: '100%' }}
+                        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                        onPressEnter={handleAddItem} 
+                      />
+                    </Form.Item>
+                  </Col>
+                  <Col xs={4} sm={1}>
+                    <Button
+                      type="primary"
+                      size="small"
+                      icon={<PlusOutlined />}
+                      onClick={handleAddItem}
+                      style={{ width: '100%' }}
                     />
-                  </Form.Item>
-                </Col>
-                <Col span={7}>
-                  <Form.Item name="tempNama" noStyle>
-                    <Input 
-                      id="input_tempNama" 
-                      placeholder="Nama Barang (Isi Manual)" 
-                      onPressEnter={() => document.getElementById("input_tempQty")?.focus()}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={2}>
-                  <Form.Item name="tempQty" noStyle>
-                    <InputNumber 
-                      id="input_tempQty" 
-                      placeholder="Qty"
-                      onChange={calculateSubtotal}
-                      onPressEnter={() => document.getElementById("input_tempHarga")?.focus()} 
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={4}>
-                  <Form.Item name="tempHarga" noStyle>
-                    <InputNumber 
-                      id="input_tempHarga" 
-                      placeholder="Harga"
-                      onChange={calculateSubtotal}
-                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      onPressEnter={() => document.getElementById("input_tempDisc")?.focus()} 
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={3}>
-                  <Form.Item name="tempDisc" noStyle>
-                    <InputNumber 
-                      id="input_tempDisc" 
-                      placeholder="Disc"
-                      onChange={calculateSubtotal}
-                      onPressEnter={() => document.getElementById("input_tempSubtotal")?.focus()} 
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={4}>
-                  <Form.Item name="tempSubtotal" noStyle>
-                    <InputNumber 
-                      id="input_tempSubtotal" 
-                      placeholder="Subtotal" 
-                      formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                      onPressEnter={handleAddItem} 
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={1}>
-                  <Button
-                    type="primary"
-                    size="small"
-                    icon={<PlusOutlined />}
-                    onClick={handleAddItem}
-                  />
-                </Col>
-              </Row>
+                  </Col>
+                </Row>
+              </div>
+
+              <Table 
+                columns={columns} 
+                dataSource={items} 
+                pagination={false} 
+                size="small" 
+                scroll={{ x: 700 }}
+                style={{ border: '1px solid #f0f0f0', borderTop: 'none', borderRadius: '0 0 8px 8px', minWidth: 640 }}
+              />
             </div>
 
-            <Table 
-              columns={columns} 
-              dataSource={items} 
-              pagination={false} 
-              size="small" 
-              style={{ border: '1px solid #f0f0f0', borderTop: 'none', borderRadius: '0 0 8px 8px' }}
-            />
-
-            <div style={{ marginTop: 24, padding: '20px', background: '#f8fafc', borderRadius: '12px', display: 'flex', justifyContent: 'space-between' }}>
-              <Space size={40}>
+            <div style={{ marginTop: 24, padding: '20px', background: '#f8fafc', borderRadius: '12px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between' }}>
+              <Space size={40} wrap>
                 <div><Text type="secondary">DPP</Text><br /><Text strong>{items.reduce((a, b) => a + b.Subtotal, 0).toLocaleString()}</Text></div>
                 <div><Text type="secondary">PPN</Text><br /><Text strong>{items.reduce((a, b) => a + b.PPn, 0).toLocaleString()}</Text></div>
                 <div><Text type="secondary">TOTAL</Text><br /><Text strong style={{ fontSize: '20px', color: '#6366f1' }}>Rp {items.reduce((a, b) => a + (b.Subtotal + b.PPn), 0).toLocaleString()}</Text></div>
               </Space>
-              <Space className="no-print">
+              <Space className="no-print" wrap>
                 <Button icon={<PrinterOutlined />} onClick={handlePrint}>Print PDF</Button>
                 <Button type="primary" icon={<SaveOutlined />} onClick={handleSave} style={{ background: '#10b981' }}>Save</Button>
                 <Button danger icon={<CloseCircleOutlined />} onClick={() => {form.resetFields(); setItems([]);}}>Reset</Button>
@@ -430,9 +444,20 @@ export default function PembelianFaktur() {
           </Form>
         </Card>
 
-        {/* AREA PRINT */}
-        <div style={{ position: "absolute", top: 0, left: 0, visibility: "hidden", zIndex: -1 }}>
-          <InvoicePembelianPrint ref={invoicePrintRef} form={form} items={items} />
+        {/* AREA PRINT - dibuat 0x0 + overflow hidden supaya lebar InvoicePembelianPrint 
+            (biasanya didesain lebar kertas A4) tidak ikut memperlebar scrollWidth halaman */}
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: 0,
+          height: 0,
+          overflow: "hidden",
+          pointerEvents: "none"
+        }}>
+          <div style={{ visibility: "hidden" }}>
+            <InvoicePembelianPrint ref={invoicePrintRef} form={form} items={items} />
+          </div>
         </div>
       </Col>
 
@@ -445,7 +470,8 @@ export default function PembelianFaktur() {
           setSearchSupplier("");
         }}
         footer={null}
-        width={700}
+        width="90%"
+        style={{ maxWidth: 700 }}
         centered
       >
         <Input
@@ -465,7 +491,7 @@ export default function PembelianFaktur() {
             );
           })} 
           pagination={{ pageSize: 5 }}
-          scroll={{ y: 300 }}
+          scroll={{ x: 500, y: 300 }}
           columns={[
             { title: 'Kode', width: 120, render: (_, r) => <Tag color="blue">{Array.isArray(r) ? r[0] : r.KodeSupplier}</Tag> },
             { title: 'Nama Supplier', render: (_, r) => <Text strong>{Array.isArray(r) ? r[1] : r.Nama}</Text> },
