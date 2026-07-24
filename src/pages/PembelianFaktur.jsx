@@ -192,8 +192,7 @@ export default function PembelianFaktur() {
   ];
 
   return (
-    // xs: form entri tampil duluan (order 1), riwayat pindah ke bawah (order 2)
-    <Row gutter={[16, 16]} style={{ margin: 0 }}>
+    <Row gutter={[16, 16]} style={{ margin: 0, overflowX: "hidden" }}>
       <Col xs={24} lg={6} order={2} className="no-print">
         <Card 
           title={<Space><FileTextOutlined style={{ color: '#6366f1' }} /> <Text strong>Riwayat Faktur</Text></Space>} 
@@ -236,7 +235,7 @@ export default function PembelianFaktur() {
                 <Col xs={24} sm="auto"><Title level={4} style={{ margin: 0 }}>Entry Pembelian Barang</Title></Col>
                 <Col xs={24} sm="auto">
                   <Form.Item name="NoFaktur" label="No. Faktur" style={{ margin: 0 }}>
-                    <Input placeholder="NB42681" style={{ width: '100%', minWidth: 180 }} />
+                    <Input placeholder="NB42681" style={{ width: '100%' }} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -255,30 +254,32 @@ export default function PembelianFaktur() {
                 </Col>
                 <Col xs={24} md={12}>
                   <Row gutter={8}>
-                    <Col xs={12}><Form.Item label="Gudang" name="KodeGudang" initialValue="G101"><Select options={[{value: 'G101', label: 'G101 - Pusat'}]} /></Form.Item></Col>
-                    <Col xs={12}><Form.Item label="Pembayaran" name="Type" initialValue="1"><Select options={[{value: '0', label: 'Tunai'}, {value: '1', label: 'Kredit'}]} /></Form.Item></Col>
+                    <Col xs={12}><Form.Item label="Gudang" name="KodeGudang" initialValue="G101"><Select style={{ width: '100%' }} options={[{value: 'G101', label: 'G101 - Pusat'}]} /></Form.Item></Col>
+                    <Col xs={12}><Form.Item label="Pembayaran" name="Type" initialValue="1"><Select style={{ width: '100%' }} options={[{value: '0', label: 'Tunai'}, {value: '1', label: 'Kredit'}]} /></Form.Item></Col>
                   </Row>
                   <Row gutter={8}>
-                    <Col xs={12}><Form.Item label="PPN" name="PpnType" initialValue="1"><Select options={[{value: '1', label: 'PPN 11%'}, {value: '0', label: 'Non PPN'}]} /></Form.Item></Col>
+                    <Col xs={12}><Form.Item label="PPN" name="PpnType" initialValue="1"><Select style={{ width: '100%' }} options={[{value: '1', label: 'PPN 11%'}, {value: '0', label: 'Non PPN'}]} /></Form.Item></Col>
                     <Col xs={12}><Form.Item label="Jatuh Tempo" name="TglJt"><DatePicker style={{ width: '100%' }} /></Form.Item></Col>
                   </Row>
                 </Col>
               </Row>
 
-              <Table 
-                columns={columns} dataSource={items} pagination={false} size="small"
-                scroll={{ x: 750 }}
-                summary={() => (
-                  <Table.Summary.Row className="no-print" style={{ background: '#f8fafc' }}>
-                    <Table.Summary.Cell index={0}><Form.Item name="tempKode" noStyle><Input placeholder="Kode" variant="borderless" /></Form.Item></Table.Summary.Cell>
-                    <Table.Summary.Cell index={1}><Text type="secondary">Input barang...</Text></Table.Summary.Cell>
-                    <Table.Summary.Cell index={2}><Form.Item name="tempQty" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
-                    <Table.Summary.Cell index={3}><Form.Item name="tempHarga" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
-                    <Table.Summary.Cell index={4}><Form.Item name="tempDisc" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
-                    <Table.Summary.Cell index={5} colSpan={2}><Button type="primary" size="small" icon={<PlusOutlined />} onClick={handleAddItem}>Add</Button></Table.Summary.Cell>
-                  </Table.Summary.Row>
-                )}
-              />
+              <div style={{ overflowX: "auto" }}>
+                <Table 
+                  columns={columns} dataSource={items} pagination={false} size="small"
+                  scroll={{ x: 750 }}
+                  summary={() => (
+                    <Table.Summary.Row className="no-print" style={{ background: '#f8fafc' }}>
+                      <Table.Summary.Cell index={0}><Form.Item name="tempKode" noStyle><Input placeholder="Kode" variant="borderless" /></Form.Item></Table.Summary.Cell>
+                      <Table.Summary.Cell index={1}><Text type="secondary">Input barang...</Text></Table.Summary.Cell>
+                      <Table.Summary.Cell index={2}><Form.Item name="tempQty" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
+                      <Table.Summary.Cell index={3}><Form.Item name="tempHarga" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
+                      <Table.Summary.Cell index={4}><Form.Item name="tempDisc" noStyle><InputNumber placeholder="0" variant="borderless" style={{ width: '100%' }} /></Form.Item></Table.Summary.Cell>
+                      <Table.Summary.Cell index={5} colSpan={2}><Button type="primary" size="small" icon={<PlusOutlined />} onClick={handleAddItem}>Add</Button></Table.Summary.Cell>
+                    </Table.Summary.Row>
+                  )}
+                />
+              </div>
 
               <div style={{ marginTop: 24, padding: '20px', background: '#f8fafc', borderRadius: '12px', display: 'flex', flexWrap: 'wrap', gap: 16, justifyContent: 'space-between' }}>
                 <Space size={40} wrap>
@@ -294,20 +295,25 @@ export default function PembelianFaktur() {
               </div>
             </Form>
           </Card>
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              visibility: "hidden",
-              zIndex: -1,
-            }}
-          >
-            <InvoicePembelianPrint
-              ref={invoicePrintRef}
-              form={form}
-              items={items}
-            />
+
+          {/* FIX: wrapper dibuat 0x0 + overflow hidden supaya lebar InvoicePembelianPrint 
+              (biasanya didesain lebar kertas A4) tidak ikut memperlebar scrollWidth halaman. */}
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            overflow: "hidden",
+            pointerEvents: "none"
+          }}>
+            <div style={{ visibility: "hidden" }}>
+              <InvoicePembelianPrint
+                ref={invoicePrintRef}
+                form={form}
+                items={items}
+              />
+            </div>
           </div>
         </div>
       </Col>
