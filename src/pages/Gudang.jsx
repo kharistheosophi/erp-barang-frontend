@@ -151,30 +151,33 @@ const Gudang = () => {
   ];
 
   return (
-    <div style={{ padding: '0px' }}>
+    <div className="page-wrapper" style={{ padding: '0px' }}>
       <Card 
         bordered={false} 
         style={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
+        styles={{ body: { padding: '16px' } }}
+        className="page-card"
       >
         <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 32 }}>
           <Col xs={24} md="auto">
             <Space size="middle">
-              <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px' }}>
+              <div style={{ background: '#f0fdf4', padding: '12px', borderRadius: '12px', flexShrink: 0 }}>
                 <HomeOutlined style={{ fontSize: '24px', color: '#22c55e' }} />
               </div>
               <div>
-                <Title level={3} style={{ margin: 0 }}>Master Gudang</Title>
-                <Text type="secondary">Kelola daftar lokasi gudang perusahaan</Text>
+                <Title level={3} style={{ margin: 0, fontSize: 'clamp(18px, 4vw, 24px)' }}>Master Gudang</Title>
+                <Text type="secondary" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>Kelola daftar lokasi gudang perusahaan</Text>
               </div>
             </Space>
           </Col>
-          <Col xs={24} md="auto">
-            <Space size="small" wrap style={{ width: '100%' }}>
+          <Col xs={24} md="auto" style={{ width: '100%' }}>
+            <Space size="small" wrap style={{ width: '100%' }} className="toolbar-space">
               <Input 
                 placeholder="Cari nama atau kode gudang..." 
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                 onChange={(e) => setSearchText(e.target.value)}
                 style={{ width: 250, maxWidth: '100%', borderRadius: '8px' }}
+                className="search-input-responsive"
                 allowClear
               />
               <Button icon={<ReloadOutlined />} onClick={loadData} loading={loading} />
@@ -183,6 +186,7 @@ const Gudang = () => {
                 icon={<PlusOutlined />} 
                 onClick={() => showModal()}
                 style={{ borderRadius: '8px', background: '#22c55e', border: 'none' }}
+                className="add-btn-responsive"
               >
                 Tambah Gudang
               </Button>
@@ -195,9 +199,10 @@ const Gudang = () => {
           columns={columns} 
           rowKey="KodeGudang" 
           loading={loading} 
-          pagination={{ pageSize: 7 }}
+          pagination={{ pageSize: 7, simple: true, responsive: true }}
           scroll={{ x: 700 }}
           className="modern-table"
+          size="middle"
         />
 
         <Modal 
@@ -233,6 +238,22 @@ const Gudang = () => {
           font-size: 11px !important;
           font-weight: 700 !important;
           text-transform: uppercase;
+        }
+
+        @media (max-width: 768px) {
+          .page-card .ant-card-body { padding: 12px !important; }
+          .toolbar-space { flex-direction: column; align-items: stretch !important; }
+          .toolbar-space > * { width: 100% !important; }
+          .search-input-responsive { width: 100% !important; }
+          .add-btn-responsive { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+          .modern-table .ant-table-thead > tr > th,
+          .modern-table .ant-table-tbody > tr > td {
+            font-size: 12px !important;
+            padding: 8px !important;
+          }
         }
       `}</style>
     </div>

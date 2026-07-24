@@ -98,21 +98,23 @@ const Supplier = () => {
   ];
 
   return (
-    <div style={{ padding: "0px", minHeight: "100vh" }}>
+    <div className="page-wrapper" style={{ padding: "0px", minHeight: "100vh" }}>
       <Card 
         bordered={false}
         style={{ borderRadius: "12px", boxShadow: "0 4px 20px rgba(0,0,0,0.05)" }}
+        styles={{ body: { padding: '16px' } }}
+        className="page-card"
       >
         {/* HEADER */}
         <Row gutter={[16, 16]} justify="space-between" align="middle" style={{ marginBottom: "20px" }}>
           <Col xs={24} md="auto">
             <Space size="middle">
-              <div style={{ background: "#e8eaf6", padding: "10px", borderRadius: "8px" }}>
+              <div style={{ background: "#e8eaf6", padding: "10px", borderRadius: "8px", flexShrink: 0 }}>
                 <TeamOutlined style={{ color: "#3f51b5", fontSize: "20px" }} />
               </div>
               <div>
-                <Title level={4} style={{ margin: 0 }}>Master Supplier</Title>
-                <Text type="secondary">Kelola data mitra bisnis dan supplier</Text>
+                <Title level={4} style={{ margin: 0, fontSize: 'clamp(16px, 4vw, 20px)' }}>Master Supplier</Title>
+                <Text type="secondary" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>Kelola data mitra bisnis dan supplier</Text>
               </div>
             </Space>
           </Col>
@@ -127,7 +129,7 @@ const Supplier = () => {
         </Row>
 
         {/* FORM SECTION */}
-        <div style={{ background: "#ffffff", padding: "20px", borderRadius: "12px", border: "1px solid #f0f0f0", marginBottom: "20px" }}>
+        <div style={{ background: "#ffffff", padding: "20px", borderRadius: "12px", border: "1px solid #f0f0f0", marginBottom: "20px" }} className="form-section-responsive">
           <Form form={form} layout="vertical" size="middle">
             <Row gutter={[32, 0]}>
               <Col xs={24} md={8}>
@@ -170,12 +172,12 @@ const Supplier = () => {
             },
           })}
           rowClassName={(record) => (record.KodeSupplier === selectedKey ? "selected-row-clean" : "")}
-          pagination={{ pageSize: 10, size: "small" }}
+          pagination={{ pageSize: 10, size: "small", responsive: true }}
           style={{ border: "1px solid #f0f0f0", borderRadius: "8px", overflow: "hidden" }}
         />
 
         {/* ACTION TOOLBAR */}
-        <div style={{ 
+        <div className="action-toolbar-responsive" style={{ 
           marginTop: "20px", 
           display: "flex", 
           justifyContent: "flex-end",
@@ -184,7 +186,7 @@ const Supplier = () => {
           padding: "15px 0",
           borderTop: "1px solid #f0f0f0"
         }}>
-          <Space size="small" wrap>
+          <Space size="small" wrap style={{ width: '100%', justifyContent: 'flex-end' }} className="toolbar-btn-space">
             <Button 
                 icon={<FileExcelOutlined />} 
                 style={{ borderRadius: "6px" }}
@@ -221,6 +223,22 @@ const Supplier = () => {
         .ant-input:focus, .ant-input-focused {
           border-color: #3f51b5;
           box-shadow: 0 0 0 2px rgba(63, 81, 181, 0.1);
+        }
+
+        @media (max-width: 768px) {
+          .page-card .ant-card-body { padding: 12px !important; }
+          .form-section-responsive { padding: 14px !important; }
+          .toolbar-btn-space { justify-content: stretch !important; }
+          .toolbar-btn-space > button { flex: 1 1 45%; }
+        }
+
+        @media (max-width: 480px) {
+          .toolbar-btn-space > button { flex: 1 1 100%; }
+          .ant-table-thead > tr > th,
+          .ant-table-tbody > tr > td {
+            font-size: 12px !important;
+            padding: 8px !important;
+          }
         }
       `}</style>
     </div>

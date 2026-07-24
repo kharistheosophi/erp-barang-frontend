@@ -109,6 +109,7 @@ const Barang = () => {
       title: "HARGA JUAL", 
       dataIndex: "HargaJual", 
       align: 'right',
+      width: 140,
       render: (v) => <Text style={{ color: '#059669', fontWeight: '600' }}>{`Rp ${Number(v).toLocaleString('id-ID')}`}</Text>
     },
     { 
@@ -130,6 +131,7 @@ const Barang = () => {
       key: "action",
       align: 'center',
       width: 120,
+      fixed: 'right',
       render: (_, record) => (
         <Space>
           <Button 
@@ -150,33 +152,36 @@ const Barang = () => {
   ];
 
   return (
-    <div style={{ padding: '0px' }}>
+    <div className="page-wrapper" style={{ padding: '0px' }}>
       <Card 
         bordered={false} 
         style={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
+        styles={{ body: { padding: '16px' } }}
+        className="page-card"
       >
         {/* Header Table */}
-        <Row justify="space-between" align="middle" style={{ marginBottom: 32 }}>
-          <Col>
+        <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 32 }}>
+          <Col xs={24} md="auto">
             <Space size="middle">
               <div style={{ 
-                background: '#f5f3ff', padding: '12px', borderRadius: '12px' 
+                background: '#f5f3ff', padding: '12px', borderRadius: '12px', flexShrink: 0
               }}>
                 <BoxPlotOutlined style={{ fontSize: '24px', color: '#6366f1' }} />
               </div>
               <div>
-                <Title level={3} style={{ margin: 0 }}>Data Inventori</Title>
-                <Text type="secondary">Kelola stok dan informasi barang Anda</Text>
+                <Title level={3} style={{ margin: 0, fontSize: 'clamp(18px, 4vw, 24px)' }}>Data Inventori</Title>
+                <Text type="secondary" style={{ fontSize: 'clamp(12px, 3vw, 14px)' }}>Kelola stok dan informasi barang Anda</Text>
               </div>
             </Space>
           </Col>
-          <Col>
-            <Space size="small">
+          <Col xs={24} md="auto" style={{ width: '100%' }}>
+            <Space size="small" wrap className="toolbar-space" style={{ width: '100%' }}>
               <Input 
                 placeholder="Cari nama atau kode..." 
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                 onChange={(e) => setSearchText(e.target.value)}
                 style={{ width: 250, borderRadius: '8px' }}
+                className="search-input-responsive"
                 allowClear
               />
               <Button 
@@ -194,6 +199,7 @@ const Barang = () => {
                   background: '#6366f1', 
                   boxShadow: '0 4px 10px rgba(99, 102, 241, 0.4)' 
                 }}
+                className="add-btn-responsive"
               >
                 Tambah Barang
               </Button>
@@ -206,8 +212,9 @@ const Barang = () => {
           columns={columns} 
           rowKey="KodeBrg" 
           loading={loading} 
-          pagination={{ pageSize: 7 }}
+          pagination={{ pageSize: 7, simple: true, responsive: true }}
           className="modern-table"
+          scroll={{ x: 700 }}
         />
 
         {/* MODAL EDIT/TAMBAH */}
@@ -222,7 +229,8 @@ const Barang = () => {
           open={isModalOpen} 
           onOk={handleSave} 
           onCancel={() => setIsModalOpen(false)}
-          width={600}
+          width="90%"
+          style={{ maxWidth: 600 }}
           okText="Simpan"
           cancelText="Batal"
           centered
@@ -234,12 +242,12 @@ const Barang = () => {
             </Divider>
             
             <Row gutter={16}>
-              <Col span={10}>
+              <Col xs={24} sm={10}>
                 <Form.Item name="KodeBrg" label="Kode Barang" rules={[{ required: true }]}>
                   <Input placeholder="Contoh: BRG001" disabled={!!editingItem} style={{ borderRadius: '6px' }} />
                 </Form.Item>
               </Col>
-              <Col span={14}>
+              <Col xs={24} sm={14}>
                 <Form.Item name="NamaBrg" label="Nama Barang" rules={[{ required: true }]}>
                   <Input placeholder="Masukkan nama barang" style={{ borderRadius: '6px' }} />
                 </Form.Item>
@@ -247,10 +255,10 @@ const Barang = () => {
             </Row>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col xs={24} sm={12}>
                 <Form.Item name="Kemasan" label="Kemasan"><Input placeholder="Box, Pcs, dll" style={{ borderRadius: '6px' }} /></Form.Item>
               </Col>
-              <Col span={12}>
+              <Col xs={24} sm={12}>
                 <Form.Item name="Satuan" label="Satuan"><Input placeholder="Unit, Kg, dll" style={{ borderRadius: '6px' }} /></Form.Item>
               </Col>
             </Row>
@@ -260,7 +268,7 @@ const Barang = () => {
             </Divider>
 
             <Row gutter={16}>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Form.Item name="HargaBeli" label="Harga Beli">
                   <InputNumber 
                     style={{ width: '100%', borderRadius: '6px' }} 
@@ -269,7 +277,7 @@ const Barang = () => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Form.Item name="HargaJual" label="Harga Jual">
                   <InputNumber 
                     style={{ width: '100%', borderRadius: '6px' }} 
@@ -278,7 +286,7 @@ const Barang = () => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={8}>
+              <Col xs={24} sm={8}>
                 <Form.Item name="Stok" label="Stok"><InputNumber style={{ width: '100%', borderRadius: '6px' }} min={0} /></Form.Item>
               </Col>
             </Row>
@@ -305,6 +313,22 @@ const Barang = () => {
         }
         .ant-btn-primary {
           background: #6366f1 !important;
+        }
+
+        @media (max-width: 768px) {
+          .page-card .ant-card-body { padding: 12px !important; }
+          .toolbar-space { flex-direction: column; align-items: stretch !important; }
+          .toolbar-space > * { width: 100% !important; }
+          .search-input-responsive { width: 100% !important; }
+          .add-btn-responsive { width: 100%; justify-content: center; }
+        }
+
+        @media (max-width: 480px) {
+          .modern-table .ant-table-thead > tr > th,
+          .modern-table .ant-table-tbody > tr > td {
+            font-size: 12px !important;
+            padding: 8px !important;
+          }
         }
       `}</style>
     </div>
