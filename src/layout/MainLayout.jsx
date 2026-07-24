@@ -85,24 +85,26 @@ export default function MainLayout() {
     const menuItems = [
         { key: "dashboard", icon: <DashboardOutlined />, label: "Dashboard" },
         {
-            key: "master",
-            icon: <DatabaseOutlined />,
-            label: "Master Data",
-            children: [
-                { key: "barang", label: "Data Barang" },
-                { key: "supplier", label: "Data Supplier" },
-                { key: "gudang", label: "Data Gudang" },
-            ]
-        },
-        {
-            key: "transaksi",
-            icon: <ShoppingCartOutlined />,
-            label: "Transaksi",
-            children: [
-                { key: "pembelian", label: "Pembelian (Faktur)" },
-                { key: "mutasi", label: "Mutasi Stok" },
-            ]
-        },
+    key: "master",
+    icon: <DatabaseOutlined />,
+    label: "Master Data",
+    children: [
+        { key: "barang", label: "Data Barang" },
+        { key: "supplier", label: "Data Supplier" },
+        { key: "pelanggan", label: "Data Pelanggan" },  // baru
+        { key: "gudang", label: "Data Gudang" },
+    ]
+},
+{
+    key: "transaksi",
+    icon: <ShoppingCartOutlined />,
+    label: "Transaksi",
+    children: [
+        { key: "pembelian", label: "Pembelian (Faktur)" },
+        { key: "penjualan", label: "Penjualan (Faktur)" },  // baru
+        { key: "mutasi", label: "Mutasi Stok" },
+    ]
+},
         {
             key: "inventori",
             icon: <HistoryOutlined />,

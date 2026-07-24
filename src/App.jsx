@@ -10,6 +10,10 @@ import Gudang from "./pages/Gudang"; // 3. Tambahkan import Gudang
 import MainLayout from "./layout/MainLayout";
 import StokGudang from "./pages/StokGudang";
 import ProtectedRoute from "./ProtectedRoute";
+import Pelanggan from "./pages/Pelanggan";
+import PenjualanFaktur from "./pages/PenjualanFaktur";
+
+// di dalam <Route path="/" ...>
 
 function App() {
   return (
@@ -34,6 +38,8 @@ function App() {
           <Route path="gudang" element={<Gudang />} /> {/* 4. Daftarkan route Gudang */}
           <Route path="mutasi" element={<MutasiStok />} />
           <Route path="stok-gudang" element={<StokGudang />} />
+          <Route path="pelanggan" element={<Pelanggan />} />
+<Route path="penjualan" element={<PenjualanFaktur />} />
         </Route>
 
         {/* Rute 404 */}
