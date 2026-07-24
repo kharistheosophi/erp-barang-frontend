@@ -43,7 +43,7 @@ const MutasiStok = () => {
       title: "TANGGAL", 
       dataIndex: "Tanggal", 
       key: "Tanggal", 
-      width: 180,
+      width: 170,
       render: (text) => (
         <Text style={{ color: '#64748b', fontSize: '13px' }}>
           {new Date(text).toLocaleString('id-ID')}
@@ -70,6 +70,7 @@ const MutasiStok = () => {
       dataIndex: "QtyMasuk", 
       key: "QtyMasuk",
       align: 'right',
+      width: 130,
       render: (v) => v > 0 ? (
         <Text style={{ color: '#059669', fontWeight: '600' }}>
           <ArrowUpOutlined /> {Number(v).toLocaleString('id-ID')}
@@ -81,6 +82,7 @@ const MutasiStok = () => {
       dataIndex: "QtyKeluar", 
       key: "QtyKeluar",
       align: 'right',
+      width: 130,
       render: (v) => v > 0 ? (
         <Text style={{ color: '#dc2626', fontWeight: '600' }}>
           <ArrowDownOutlined /> {Number(v).toLocaleString('id-ID')}
@@ -91,6 +93,7 @@ const MutasiStok = () => {
       title: "REFERENSI", 
       dataIndex: "RefTransaksi", 
       key: "RefTransaksi",
+      width: 140,
       render: (text) => <Text strong style={{ color: '#1e293b' }}>{text || "-"}</Text>
     },
     { 
@@ -98,6 +101,7 @@ const MutasiStok = () => {
       dataIndex: "TypeTransaksi", 
       key: "TypeTransaksi",
       align: 'center',
+      width: 130,
       render: (text) => (
         <Tag 
           color={text === 'PEMBELIAN' ? 'cyan' : 'orange'}
@@ -115,8 +119,8 @@ const MutasiStok = () => {
         bordered={false} 
         style={{ borderRadius: '16px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
       >
-        <Row justify="space-between" align="middle" style={{ marginBottom: 32 }}>
-          <Col>
+        <Row justify="space-between" align="middle" gutter={[16, 16]} style={{ marginBottom: 32 }}>
+          <Col xs={24} md="auto">
             <Space size="middle">
               <div style={{ background: '#f5f3ff', padding: '12px', borderRadius: '12px' }}>
                 <HistoryOutlined style={{ fontSize: '24px', color: '#6366f1' }} />
@@ -127,13 +131,13 @@ const MutasiStok = () => {
               </div>
             </Space>
           </Col>
-          <Col>
-            <Space size="small">
+          <Col xs={24} md="auto">
+            <Space size="small" wrap style={{ width: '100%' }}>
               <Input 
                 placeholder="Cari kode barang atau ref..." 
                 prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
                 onChange={(e) => setSearchText(e.target.value)}
-                style={{ width: 250, borderRadius: '8px' }}
+                style={{ width: 250, maxWidth: '100%', borderRadius: '8px' }}
                 allowClear
               />
               <Button 
@@ -149,7 +153,6 @@ const MutasiStok = () => {
                     justifyContent: 'center'
                 }}
               />
-              {/* Tombol Aksi Utama yang disamakan dengan gaya komponen Barang */}
               <Button 
                 type="primary" 
                 icon={<HistoryOutlined />} 
@@ -174,6 +177,7 @@ const MutasiStok = () => {
           rowKey="IdMutasi" 
           loading={loading} 
           pagination={{ pageSize: 10 }}
+          scroll={{ x: 900 }}
           className="modern-table"
         />
       </Card>
